@@ -25,32 +25,25 @@ export const isValidUser = (body: unknown): body is UserRequestBody => {
   return false;
 };
 
-export const users: User[] = [];
+export const users = new Map<string, User>();
 
-export const getAllUsers = () => users;
+export const getAllUsers = () => Array.from(users.values());
 
-export const getUserById = (id: string) => users.find((user) => user.id === id);
+export const getUserById = (id: string) => users.get(id);
 
 export const createUser = (userData: UserRequestBody) => {
-  const newUser: User = { id: uuidv4(), ...userData };
-  users.push(newUser);
+  const userId = uuidv4();
+  const newUser: User = { id: userId, ...userData };
+  users.set(userId, newUser);
   return newUser;
 };
 
-export const updateUser = ({ id, username, age, hobbies }: User) => {
-  const userIndex = users.findIndex((user) => user.id === id);
-  if (userIndex !== -1) {
-    users[userIndex] = { ...users[userIndex], username, age, hobbies };
-    return users[userIndex];
+export const updateUser = (userToUpdate: User) => {
+  if (users.has(userToUpdate.id)) {
+    users.set(userToUpdate.id, userToUpdate);
+    return userToUpdate;
   }
   return null;
 };
 
-export const deleteUser = (id: string) => {
-  const userIndex = users.findIndex((user) => user.id === id);
-  if (userIndex !== -1) {
-    users.splice(userIndex, 1);
-    return true;
-  }
-  return false;
-};
+export const deleteUser = (id: string) => users.delete(id);
