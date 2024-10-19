@@ -4,9 +4,6 @@ import { sendResponse, parseRequestBody } from '../utils/utils';
 import { validate as uuidValidate } from 'uuid';
 import { errorMessages } from '../utils/constants';
 
-// To test error handling
-// if (Math.random() > 0.2) throw new Error('My custom');
-
 export const handleGetAllUsers = (res: ServerResponse) => {
   try {
     const users = getAllUsers();
@@ -24,10 +21,10 @@ export const handleGetUserById = (res: ServerResponse, userId: string) => {
     }
 
     const user = getUserById(userId);
-    if (!user) {
-      sendResponse(res, 404, errorMessages.userNotFound);
-    } else {
+    if (user) {
       sendResponse(res, 200, user);
+    } else {
+      sendResponse(res, 404, errorMessages.userNotFound);
     }
   } catch {
     sendResponse(res, 500, errorMessages.internalError);
